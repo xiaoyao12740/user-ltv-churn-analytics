@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from sklearn.metrics import RocCurveDisplay, PrecisionRecallDisplay, ConfusionMatrixDisplay
+from sklearn.calibration import calibration_curve
 from src.paths import FIGURES
 
 
@@ -33,4 +34,11 @@ def make_figures(daily,monthly,cohort,ltv,churn,segments,importance,features,pro
     selected=next(iter(preds)); fig,ax=plt.subplots(figsize=(6,5)); ConfusionMatrixDisplay.from_predictions(y,preds[selected],ax=ax,cmap="Blues"); ax.set_title(f"Confusion Matrix: {selected.replace('_',' ').title()}"); _save("08_confusion_matrix.png")
     imp=pd.Series(importance,index=features).nlargest(12).sort_values(); plt.figure(figsize=(9,6)); imp.plot.barh(color="#2878b5"); plt.title("Random Forest Feature Importance"); plt.xlabel("Importance"); _save("09_feature_importance.png")
     plt.figure(figsize=(9,6)); colors=segments.customer_segment.map({"Priority Retention":"#d62728","VIP Maintenance":"#2ca02c","Automated Reactivation":"#ff7f0e","Growth/Nurture":"#1f77b4"}); plt.scatter(segments.predicted_ltv,segments.churn_probability,c=colors,s=12,alpha=.45); plt.xlabel("Predicted LTV"); plt.ylabel("Churn Probability"); plt.title("Customer Value × Churn Risk Matrix"); _save("10_value_risk_matrix.png")
-
+    fig,ax=plt.subplots(figsize=(7,6)); ax.plot([0,1],[0,1],"--",color="gray",label="Perfect calibration")
+    for name,p in probs.items():
+        observed,predicted=calibration_curve(y,p,n_bins=10,strategy="quantile"); ax.plot(predicted,observed,marker="o",label=name.replace("_"," ").title())
+    ax.set(xlabel="Predicted probability",ylabel="Observed churn rate",title="Churn Probability Calibration"); ax.legend(); _save("11_churn_calibration.png")
+    fig,ax=plt.subplots(figsize=(8,6)); prevalence=float(np.mean(y))
+    for name,p in probs.items():
+        order=np.argsort(-p); cumulative=np.cumsum(np.asarray(y)[order]); population=np.arange(1,len(y)+1)/len(y); lift=(cumulative/np.arange(1,len(y)+1))/prevalence; ax.plot(population,lift,label=name.replace("_"," ").title())
+    ax.axhline(1,color="gray",ls="--"); ax.set_xlim(0,1); ax.set(xlabel="Population targeted",ylabel="Cumulative lift",title="Churn Cumulative Lift"); ax.legend(); _save("12_churn_lift.png")

@@ -4,10 +4,44 @@ from src.paths import INTERIM
 
 TARGETS = ["churn_30d", "future_90d_revenue"]
 ID_COLS = ["user_id", "snapshot_date"]
+META_COLS = ["split", "ltv_split", "churn_split", "ltv_label_mature_date", "churn_label_mature_date"]
 
 
 def feature_columns(frame):
-    return [c for c in frame.columns if c not in ID_COLS + TARGETS + ["split"]]
+    return [c for c in frame.columns if c not in ID_COLS + TARGETS + META_COLS]
+
+
+def assign_temporal_splits(snapshots: pd.DataFrame) -> pd.DataFrame:
+    """Assign label-maturity-aware splits with one shared final evaluation date.
+
+    LTV validation is 90 days before test; churn validation is at least 30 days
+    before test. Training labels must be mature at the corresponding validation
+    as-of date. Rows between train and validation are explicitly embargoed.
+    """
+    result = snapshots.copy()
+    dates = pd.DatetimeIndex(sorted(pd.to_datetime(result.snapshot_date).unique()))
+    if len(dates) < 4:
+        result["ltv_split"] = result["churn_split"] = result["split"] = "test"
+        return result
+    test_date = dates[-1]
+    ltv_candidates = dates[dates + pd.Timedelta(days=90) <= test_date]
+    churn_candidates = dates[dates + pd.Timedelta(days=30) <= test_date]
+    if not len(ltv_candidates) or not len(churn_candidates):
+        raise ValueError("Snapshot range is too short for mature validation labels")
+    ltv_val = ltv_candidates[-1]
+    churn_val = churn_candidates[-1]
+    snap = pd.to_datetime(result.snapshot_date)
+    result["ltv_label_mature_date"] = snap + pd.Timedelta(days=90)
+    result["churn_label_mature_date"] = snap + pd.Timedelta(days=30)
+    result["ltv_split"] = np.select(
+        [snap.eq(test_date), snap.eq(ltv_val), result.ltv_label_mature_date.le(ltv_val)],
+        ["test", "validation", "train"], default="embargo")
+    result["churn_split"] = np.select(
+        [snap.eq(test_date), snap.eq(churn_val), result.churn_label_mature_date.le(churn_val)],
+        ["test", "validation", "train"], default="embargo")
+    # Backward-compatible general split follows the stricter 90-day LTV design.
+    result["split"] = result["ltv_split"]
+    return result
 
 
 def build_snapshots(users, events, transactions, output_dir=INTERIM,
@@ -59,12 +93,7 @@ def build_snapshots(users, events, transactions, output_dir=INTERIM,
              "purchase_frequency","historical_ltv"] + TARGETS
         rows.append(base[keep].fillna({c: 0 for c in keep if c not in ID_COLS}))
     snapshots = pd.concat(rows, ignore_index=True)
-    unique_dates = sorted(snapshots.snapshot_date.unique())
-    if len(unique_dates) >= 3:
-        train_end, val_end = unique_dates[-3], unique_dates[-2]
-        snapshots["split"] = np.where(snapshots.snapshot_date < train_end, "train", np.where(snapshots.snapshot_date < val_end, "validation", "test"))
-    else:
-        snapshots["split"] = "test"
+    snapshots = assign_temporal_splits(snapshots)
     output_dir.mkdir(parents=True, exist_ok=True)
     snapshots.to_csv(output_dir / "user_snapshots.csv", index=False)
     return snapshots

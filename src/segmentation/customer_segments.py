@@ -3,12 +3,12 @@ from src.paths import PROCESSED, METRICS
 import json
 
 
-def segment_customers(ltv_predictions, churn_predictions, train_snapshots, output_dir=PROCESSED, value_threshold=None):
+def segment_customers(ltv_predictions, churn_predictions, train_snapshots, output_dir=PROCESSED, value_threshold=None, risk_threshold=None):
     positive_revenue = train_snapshots.loc[train_snapshots.future_90d_revenue > 0, "future_90d_revenue"]
     value_threshold = (float(value_threshold) if value_threshold is not None else
                        (float(positive_revenue.median()) if not positive_revenue.empty else 1.0))
-    # A fixed operational probability cutoff is selected before test evaluation.
-    risk_threshold = 0.5
+    # Threshold is selected on validation only; 0.5 remains the fallback baseline.
+    risk_threshold = float(risk_threshold) if risk_threshold is not None else 0.5
     frame = ltv_predictions.merge(churn_predictions[["user_id","snapshot_date","churn_probability"]],on=["user_id","snapshot_date"])
     frame["value_segment"] = frame.predicted_ltv.ge(value_threshold).map({True:"High Value",False:"Low Value"})
     frame["risk_segment"] = frame.churn_probability.ge(risk_threshold).map({True:"High Risk",False:"Low Risk"})

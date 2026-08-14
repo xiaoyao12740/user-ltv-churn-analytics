@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from src.features.build_snapshots import build_snapshots,feature_columns,TARGETS
+from src.features.build_snapshots import build_snapshots,feature_columns,TARGETS,assign_temporal_splits
 from src.models.train_ltv import train_ltv
 from src.models.train_churn import train_churn
 from src.segmentation.customer_segments import segment_customers
@@ -11,6 +11,32 @@ def test_snapshot_uses_only_past(sample_data,tmp_path):
     row=snap[snap.user_id==1].iloc[0]
     assert row.historical_ltv==0 and row.future_90d_revenue==90
     assert not set(TARGETS)&set(feature_columns(snap))
+
+def maturity_frame():
+    dates=pd.date_range("2024-07-01","2025-03-01",freq="MS")
+    return assign_temporal_splits(pd.DataFrame({"user_id":range(len(dates)),"snapshot_date":dates}))
+
+def test_only_latest_evaluation_snapshot():
+    s=maturity_frame()
+    assert s.loc[s.ltv_split=="test","snapshot_date"].nunique()==1
+    assert s.loc[s.churn_split=="test","snapshot_date"].nunique()==1
+    assert s.loc[s.ltv_split=="test","snapshot_date"].iloc[0]==s.snapshot_date.max()
+
+def test_label_maturity_prevents_future_labels():
+    s=maturity_frame()
+    ltv_as_of=s.loc[s.ltv_split=="validation","snapshot_date"].iloc[0]
+    churn_as_of=s.loc[s.churn_split=="validation","snapshot_date"].iloc[0]
+    assert s.loc[s.ltv_split=="train","ltv_label_mature_date"].le(ltv_as_of).all()
+    assert s.loc[s.churn_split=="train","churn_label_mature_date"].le(churn_as_of).all()
+
+def test_ltv_90d_temporal_embargo():
+    s=maturity_frame(); val=s.loc[s.ltv_split=="validation","snapshot_date"].iloc[0]
+    assert (s.loc[s.ltv_split=="train","snapshot_date"]+pd.Timedelta(days=90)).le(val).all()
+    assert (s.ltv_split=="embargo").any()
+
+def test_churn_30d_temporal_embargo():
+    s=maturity_frame(); val=s.loc[s.churn_split=="validation","snapshot_date"].iloc[0]
+    assert (s.loc[s.churn_split=="train","snapshot_date"]+pd.Timedelta(days=30)).le(val).all()
 
 def synthetic_snapshots(n=180):
     rng=np.random.default_rng(42); dates=np.repeat(pd.date_range("2024-01-01",periods=6,freq="MS"),n//6)
