@@ -1,10 +1,9 @@
 {
-  "value_threshold": 2.7357737623170557,
+  "value_threshold": 41.24050029256653,
   "risk_threshold": 0.5,
   "counts": {
-    "Automated Reactivation": 20656,
-    "VIP Maintenance": 4646,
-    "Growth/Nurture": 3169,
-    "Priority Retention": 1529
+    "Growth/Nurture": 17,
+    "VIP Maintenance": 10,
+    "Automated Reactivation": 3
   }
 }

@@ -4,18 +4,20 @@
   "orders": 44960,
   "date_start": "2024-01-01 00:00:00",
   "date_end": "2025-06-30 23:59:00",
-  "mysql_status": "unavailable; SQL/code artifacts retained",
+  "mysql_status": "verified: row counts, foreign keys, and net revenue reconciled",
   "timings_seconds": {
-    "generate": 53.15,
-    "validate": 0.2,
-    "kpi": 0.28,
-    "retention": 0.37,
-    "snapshots": 6.1,
-    "ltv": 22.84,
-    "churn": 16.24,
-    "segmentation": 2.22,
-    "figures": 15.85
+    "generate": 45.84,
+    "validate": 0.15,
+    "kpi": 0.26,
+    "retention": 0.36,
+    "snapshots": 4.79,
+    "ltv": 30.62,
+    "churn": 14.18,
+    "segmentation": 0.59,
+    "mysql_write": 171.97,
+    "mysql_verify": 1.01,
+    "figures": 4.48
   },
-  "total_seconds": 126.71,
+  "total_seconds": 274.85,
   "seed": 42
 }
