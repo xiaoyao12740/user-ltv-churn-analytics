@@ -75,7 +75,7 @@ Python 实现 DAU、WAU、MAU、DAU/MAU、净收入、ARPU、ARPPU、AOV 和付�
 | 模型 | MAE | RMSE | R² |
 |---|---:|---:|---:|
 | Linear Regression | 25.894 | 86.940 | -0.073 |
-| Random Forest | **25.260** | **82.261** | **0.040** |
+| Random Forest | **25.281** | **82.324** | **0.038** |
 
 | 模型 | Accuracy | Precision | Recall | F1 | ROC-AUC | PR-AUC |
 |---|---:|---:|---:|---:|---:|---:|

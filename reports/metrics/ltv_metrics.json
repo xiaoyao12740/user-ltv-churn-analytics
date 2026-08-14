@@ -1,14 +1,14 @@
 {
   "linear_regression": {
-    "mae": 14.067054273100666,
-    "rmse": 17.1099234163591,
-    "r2": 0.2546647846262019
+    "mae": 25.894286594034057,
+    "rmse": 86.94000457109154,
+    "r2": -0.072735279465445
   },
   "random_forest": {
-    "mae": 14.325992385141175,
-    "rmse": 16.668951167221824,
-    "r2": 0.29258859318255526
+    "mae": 25.28142746345752,
+    "rmse": 82.32399937038798,
+    "r2": 0.03815261715960028
   },
-  "selected_model": "linear_regression",
-  "segmentation_value_threshold": 49.94074651285858
+  "selected_model": "random_forest",
+  "segmentation_value_threshold": 2.7357737623170557
 }

@@ -18,10 +18,17 @@ def synthetic_snapshots(n=180):
     return pd.DataFrame({"user_id":np.arange(n),"snapshot_date":dates,"tenure_days":rng.integers(30,400,n),"active_days_7d":x,"active_days_30d":x*2,"historical_ltv":x*12,"churn_30d":churn,"future_90d_revenue":y,"split":np.where(dates<dates[-60],"train",np.where(dates<dates[-30],"validation","test"))})
 
 def test_training_and_segments(tmp_path,monkeypatch):
+    import src.models.train_ltv as ltv_module
+    import src.models.train_churn as churn_module
+    monkeypatch.setattr(ltv_module, "METRICS", tmp_path / "metrics")
+    monkeypatch.setattr(ltv_module, "MODELS", tmp_path / "models")
+    monkeypatch.setattr(ltv_module, "PROCESSED", tmp_path / "processed")
+    monkeypatch.setattr(churn_module, "METRICS", tmp_path / "metrics")
+    monkeypatch.setattr(churn_module, "MODELS", tmp_path / "models")
+    monkeypatch.setattr(churn_module, "PROCESSED", tmp_path / "processed")
     s=synthetic_snapshots()
     lm,lp,_,_=train_ltv(s); cm,cp,_,_,_,_=train_churn(s)
     out=segment_customers(lp,cp,s[s.split=="train"],tmp_path)
     assert {"linear_regression","random_forest"}<=lm.keys()
     assert {"logistic_regression","random_forest"}<=cm.keys()
     assert set(out.customer_segment)<= {"Priority Retention","VIP Maintenance","Automated Reactivation","Growth/Nurture"}
-

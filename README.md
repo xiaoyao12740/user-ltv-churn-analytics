@@ -75,7 +75,7 @@ The target is future 90-day net revenue. Linear Regression and Random Forest tra
 | Model | MAE | RMSE | R² |
 |---|---:|---:|---:|
 | Linear Regression | 25.894 | 86.940 | -0.073 |
-| Random Forest | **25.260** | **82.261** | **0.040** |
+| Random Forest | **25.281** | **82.324** | **0.038** |
 
 | Model | Accuracy | Precision | Recall | F1 | ROC-AUC | PR-AUC |
 |---|---:|---:|---:|---:|---:|---:|
@@ -161,4 +161,3 @@ Python 3.10+, pandas, NumPy, scikit-learn, matplotlib, SQLAlchemy, PyMySQL, pyte
 ## License
 
 MIT — see [LICENSE](LICENSE).
-
