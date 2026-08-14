@@ -1,0 +1,21 @@
+{
+  "row_counts_expected": {
+    "users": 30000,
+    "events": 671174,
+    "transactions": 44960,
+    "user_snapshots": 228350
+  },
+  "row_counts_actual": {
+    "users": 30000,
+    "events": 671174,
+    "transactions": 44960,
+    "user_snapshots": 228350
+  },
+  "row_counts_match": true,
+  "orphan_events": 0,
+  "orphan_transactions": 0,
+  "sql_net_revenue": 4141910.05,
+  "pandas_net_revenue": 4141910.0499999993,
+  "revenue_absolute_difference": 4.656612873077393e-10,
+  "revenue_matches": true
+}
