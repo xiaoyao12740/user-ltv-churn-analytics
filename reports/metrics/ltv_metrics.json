@@ -1,0 +1,14 @@
+{
+  "linear_regression": {
+    "mae": 14.067054273100666,
+    "rmse": 17.1099234163591,
+    "r2": 0.2546647846262019
+  },
+  "random_forest": {
+    "mae": 14.325992385141175,
+    "rmse": 16.668951167221824,
+    "r2": 0.29258859318255526
+  },
+  "selected_model": "linear_regression",
+  "segmentation_value_threshold": 49.94074651285858
+}

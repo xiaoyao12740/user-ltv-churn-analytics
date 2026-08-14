@@ -1,0 +1,9 @@
+{
+  "value_threshold": 41.24050029256653,
+  "risk_threshold": 0.5,
+  "counts": {
+    "Growth/Nurture": 13,
+    "Automated Reactivation": 9,
+    "VIP Maintenance": 8
+  }
+}

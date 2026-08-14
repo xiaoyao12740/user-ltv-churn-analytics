@@ -1,0 +1,13 @@
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ipynb_checkpoints/
+.env
+data/raw/*.csv
+data/interim/*.csv
+data/processed/*.csv
+models/
+*.pbix.tmp
+.coverage
+

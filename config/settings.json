@@ -1,0 +1,10 @@
+{
+  "seed": 42,
+  "observation_start": "2024-01-01",
+  "observation_end": "2025-06-30",
+  "snapshot_start": "2024-07-01",
+  "snapshot_end": "2025-03-01",
+  "churn_horizon_days": 30,
+  "ltv_horizon_days": 90
+}
+
