@@ -1,5 +1,7 @@
 # User Lifetime Value Prediction & Churn Risk Analytics
 
+[![CI](https://github.com/xiaoyao12740/user-ltv-churn-analytics/actions/workflows/ci.yml/badge.svg)](https://github.com/xiaoyao12740/user-ltv-churn-analytics/actions/workflows/ci.yml)
+
 [简体中文](README_zh-CN.md)
 
 An end-to-end, reproducible analytics and machine-learning portfolio project built on a **synthetic dataset**. It demonstrates methodology and engineering practice; it does not represent any real company or customer data.

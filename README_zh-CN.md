@@ -1,5 +1,7 @@
 # 用户生命周期价值（LTV）预测与流失预警分析
 
+[![CI](https://github.com/xiaoyao12740/user-ltv-churn-analytics/actions/workflows/ci.yml/badge.svg)](https://github.com/xiaoyao12740/user-ltv-churn-analytics/actions/workflows/ci.yml)
+
 [English](README.md)
 
 这是一个基于**可复现合成数据**的端到端数据分析与机器学习求职展示项目，用于展示方法与工程流程，不代表任何真实公司或客户数据。
